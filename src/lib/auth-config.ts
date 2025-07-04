@@ -7,30 +7,18 @@ const prisma = new PrismaClient();
 
 export const auth: NextAuthOptions = {
   pages: {
-    signIn: "/login",
+    signIn: "/",
   },
   providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
         email: { label: "E-mail", type: "email", placeholder: "Seu E-mail" },
-        password: { label: "Password", type: "password" },
-        recaptchaToken: { label: "reCAPTCHA Token", type: "text" },
+        password: { label: "Senha", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.recaptchaToken) {
-          throw new Error("O token do reCAPTCHA é obrigatório.");
-        }
-
-        const recaptchaRes = await fetch(
-          `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${credentials.recaptchaToken}`,
-          { method: "POST" }
-        );
-        const recaptchaJson = await recaptchaRes.json();
-        if (!recaptchaJson.success) {
-          throw new Error(
-            `Erro na validação do reCAPTCHA: ${recaptchaJson["error-codes"]?.join(", ") || "desconhecido"}`
-          );
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("E-mail e senha são obrigatórios");
         }
 
         const user = await prisma.user.findUnique({
@@ -41,26 +29,31 @@ export const auth: NextAuthOptions = {
             email: true,
             role: true,
             password: true,
-            active: true,
-            provider: true,
+            active: true
           },
         });
 
+        console.log("encontrou usuario", user)
+
         if (!user) {
-          throw new Error("Usuário não encontrado.");
+          throw new Error("Usuário não encontrado");
         }
 
         if (!user.active) {
-          throw new Error("Necessária validação de e-mail.");
+          throw new Error("Conta inativa");
         }
 
         if (!user.password) {
-          throw new Error("Senha não cadastrada para esse usuário.");
+          throw new Error("Senha não cadastrada");
         }
 
-        const matchPassword = await bcrypt.compare(credentials.password, user.password);
+        const matchPassword = await bcrypt.compare(
+          credentials.password, 
+          user.password
+        );
+
         if (!matchPassword) {
-          throw new Error("Senha inválida.");
+          throw new Error("Senha inválida");
         }
 
         return {
@@ -75,7 +68,7 @@ export const auth: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 1800, // 30 minutos
+    maxAge: 18000, 
   },
   callbacks: {
     async jwt({ token, user }) {
