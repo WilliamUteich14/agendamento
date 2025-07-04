@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { email } from "zod/v4";
 
 const prisma = new PrismaClient()
 
