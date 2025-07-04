@@ -30,20 +30,18 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Usuário já cadastrado" }, { status: 400 });
         }
 
-        const newUser = await prisma.user.create({
-            data: parsed,
-        })
-
         const hashedPassword = await bcrypt.hash(parsed.password, 10);
+
+        console.log("crptou>>>>>>>>", hashedPassword)
 
         await prisma.user.create({
             data: {
                 ...parsed,
                 password: hashedPassword,
-            }
-        })
+            },
+        });
 
-        return NextResponse.json(newUser);
+        return NextResponse.json({ message: "Usuário criado com Sucesso", status: 201 });
 
     } catch (error) {
         if (error instanceof z.ZodError) {
