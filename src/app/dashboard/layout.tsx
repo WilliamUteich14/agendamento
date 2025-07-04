@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiMenu, FiCalendar, FiFileText, FiUsers, FiUser, FiHome, FiSettings, FiLogOut } from "react-icons/fi";
 import { GiTooth } from "react-icons/gi";
+import { signOut } from "next-auth/react";
 
 const primaryItems = [
   { label: "Home", href: "/dashboard", icon: FiHome },
@@ -16,7 +17,6 @@ const primaryItems = [
 
 const secondaryItems = [
   { label: "Configurações", href: "/dashboard/configuracoes", icon: FiSettings },
-  { label: "Logout", href: "#", icon: FiLogOut },
 ];
 
 export default function DashboardLayout({
@@ -31,14 +31,13 @@ export default function DashboardLayout({
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-20 w-60 transform bg-slate-900 text-slate-200 shadow-xl transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
-          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`fixed inset-y-0 left-0 z-20 w-60 transform bg-slate-900 text-slate-200 shadow-xl transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }`}
       >
         {/* Header inside sidebar */}
         {/* Mobile header */}
-        <div className="flex items-center justify-between px-6 py-4 lg:hidden">
-          <div className="flex items-center gap-2"><GiTooth className="text-cyan-400" size={20} /><span className="font-semibold">DentalCare</span></div>
+        <div className="flex items-center justify-between px-6 py-4 lg:hidden border-b border-slate-700">
+         <div className="flex items-center gap-3"><GiTooth size={28} className="text-cyan-400" /><span className="text-2xl font-extrabold tracking-wide text-white">DentalCare</span></div>
           <button
             className="p-2 rounded-md hover:bg-blue-600/40"
             onClick={() => setOpen(false)}
@@ -59,11 +58,10 @@ export default function DashboardLayout({
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`group flex items-center gap-4 rounded-md px-4 py-2 font-medium transition-colors duration-150 relative ${
-                    pathname === item.href
+                  className={`group flex items-center gap-4 rounded-md px-4 py-2 font-medium transition-colors duration-150 relative ${pathname === item.href
                       ? "bg-slate-800 text-white before:content-[''] before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-cyan-400"
                       : "hover:bg-slate-800 hover:text-white"
-                  }`}
+                    }`}
                   onClick={() => setOpen(false)}
                 >
                   <item.icon size={20} className="text-cyan-400 group-hover:text-cyan-300" />
@@ -81,11 +79,10 @@ export default function DashboardLayout({
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className={`group flex items-center gap-4 rounded-md px-4 py-2 font-medium transition-colors duration-150 relative ${
-                    pathname === item.href
+                  className={`group flex items-center gap-4 rounded-md px-4 py-2 font-medium transition-colors duration-150 relative ${pathname === item.href
                       ? "bg-slate-800 text-white before:content-[''] before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-cyan-400"
                       : "hover:bg-slate-800 hover:text-white"
-                  }`}
+                    }`}
                   onClick={() => setOpen(false)}
                 >
                   <item.icon size={20} className="text-cyan-400 group-hover:text-cyan-300" />
@@ -93,6 +90,17 @@ export default function DashboardLayout({
                 </Link>
               </li>
             ))}
+
+            {/* Botão de logout */}
+            <li>
+              <button
+                onClick={() => signOut()}
+                className="group cursor-pointer w-full flex items-center gap-4 rounded-md px-4 py-2 font-medium text-left text-slate-200 transition-colors duration-150 hover:bg-slate-800 hover:text-white"
+              >
+                <FiLogOut size={20} className="text-red-400 group-hover:text-red-800" />
+                <span>Sair</span>
+              </button>
+            </li>
           </ul>
         </div>
       </aside>
